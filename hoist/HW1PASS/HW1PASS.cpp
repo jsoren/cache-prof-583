@@ -40,27 +40,13 @@ namespace {
 
         bool runOnModule(Module &M) override
         {
-            // Get the functions that print out for every load and store
-            Function* loadprint = M.getFunction("loadprint");
-            Function* storeprint = M.getFunction("storeprint");
-
-            // If we can't find them, then exit early
-            if(!loadprint || !storeprint)
-            {
-                errs() << "Function not found\n";
-                return false;
-            }
-
-            // Every store and load instruction will be represented as a unique index.
-            // The first will be instruction 0, the second will be instruction 1, and so on.
+            // Get uniwue indexes for every load and store. These should match the indexes from the profiler
             std::map<Instruction*, int> memoryIndexes;
             int memIdx = 0;
 
-            // Fill out the map of memoryindexes
             for (Module::iterator f = M.begin(); f != M.end(); ++f)
             {
                 Function* F = &(*f);
-                // We don't process any memory operations in any print functions
                 if (F->getName() == "loadprint" || F->getName() == "storeprint" || F->getName() == "printf") continue;
 
                 for (Function::iterator b = F->begin(); b != F->end(); b++) {
@@ -82,11 +68,9 @@ namespace {
                 }
             }
 
-            // Loop through the entire module, and insert prints before every load and store
             for (Module::iterator f = M.begin(); f != M.end(); ++f)
             {
                 Function* F = &(*f);
-                // Do not insert extra prints in from of print operations
                 if (F->getName() == "loadprint" || F->getName() == "storeprint" || F->getName() == "printf") continue;
 
                 for (Function::iterator b = F->begin(); b != F->end(); b++) {
@@ -94,37 +78,8 @@ namespace {
                     for(BasicBlock::iterator i_iter = bb->begin(); i_iter != bb->end(); ++i_iter) {
                         Instruction *I = &(*i_iter);
 
-                        if (I->getOpcode() == Instruction::Load)
-                        {
-                            errs() << "Load found\n";
-                            
-                            // Create a call to loadprint.
-                            // The first agrument will be the id we assigned to this load.
-                            // The second argument will be the memory address of the load.
-                            std::vector<Value*> args;
-                            ConstantInt* idx = ConstantInt::get(Type::getInt32Ty(M.getContext()), memoryIndexes.at(I));
-                            args.push_back(idx);
-                            args.push_back(I->getOperand(0));
-                            
-                            IRBuilder<> builder(I);
-                            builder.CreateCall(loadprint, args);
-                        }
+                        // Hoist? do stuff?
 
-                        if (I->getOpcode() == Instruction::Store)
-                        {
-                            errs() << "Store found\n";
-
-                            // Create a call to storeprint.
-                            // The first agrument will be the id we assigned to this store.
-                            // The second argument will be the memory address of the store.
-                            std::vector<Value*> args;
-                            ConstantInt* idx = ConstantInt::get(Type::getInt32Ty(M.getContext()), memoryIndexes.at(I));
-                            args.push_back(idx);
-                            args.push_back(I->getOperand(1));
-                            
-                            IRBuilder<> builder(I);
-                            builder.CreateCall(storeprint, args);
-                        }
                     }
 
                 }

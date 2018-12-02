@@ -25,3 +25,5 @@ python profile.py > hitmiss.txt
 This will compile main.c, will process it, and will generate profile data.
 This profile data will be used with the cache simulator to determine the hits and misses for each memory access,
 and store them in hitmiss.txt
+
+There is also a hoist/ directory, which holds the pass that will be used to process and hoist the code. This pass is unfinished.
