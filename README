@@ -1,0 +1,27 @@
+This profiler is built starting from the HW1 code, which is why there's a HW1 directory containing the actual pass.
+You'll also need the cache simulator at: https://github.com/jaminthorns/cpu-cache-simulator
+
+Usage:
+
+After cloning and entering the repo, do:
+
+mdkir build
+cd build
+cmake ..
+make
+
+This should build the pass inside a build directory. Then run:
+
+cp ../startercode/* .
+
+This will copy useful scripts and a test function (main.c) for profiling into the build directory.
+Make sure to change sim_location in profile.py in order to match the location of the cache simulator on your machine
+Then you can run:
+
+./compile.sh
+./gen.sh
+python profile.py > hitmiss.txt
+
+This will compile main.c, will process it, and will generate profile data.
+This profile data will be used with the cache simulator to determine the hits and misses for each memory access,
+and store them in hitmiss.txt
