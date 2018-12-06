@@ -21,10 +21,12 @@ Then you can run:
 ./compile.sh
 ./unroll.sh
 ./gen.sh
-python profile.py > hitmiss.txt
+python profile.py
 
 This will compile main.c, will unroll it, process it, and will generate profile data.
 This profile data will be used with the cache simulator to determine the hits and misses for each memory access,
-and store them in hitmiss.txt
+and store them in a file called hitmiss.txt
 
 There is also a hoist/ directory, which holds the pass that will be used to process and hoist the code. This pass is unfinished.
+
+NOTE: The current main.c takes about 7.5 minutes for the profiling stage.

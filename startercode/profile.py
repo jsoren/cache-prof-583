@@ -74,7 +74,7 @@ mem = int(math.ceil(math.log(maxAddr - minAddr, 2)))
 with open('command.txt', 'w') as c:
 	c.write(command)
 
-exit
+print('Simulating results...')
 # Feed all commands into the simulator
 result = sp.check_output('cat command.txt | python3 ' + sim_location + ' ' + str(mem) + ' ' + sim_args, shell=True)
 result = result.decode('utf-8')
@@ -118,6 +118,9 @@ for i, match in enumerate(matches):
 # print profile as:
 #  memory_access hits misses
 # for all memory acceses
-print("Memory_access_ID Hits Misses")
-for k in mem_hitmiss.keys():
-	print(k, mem_hitmiss[k][0], mem_hitmiss[k][1])
+with open('hitmiss.txt','w') as hm:
+	print("Memory_access_ID Hits Misses")
+	hm.write("Memory_access_ID Hits Misses")
+	for k in mem_hitmiss.keys():
+		print(k, mem_hitmiss[k][0], mem_hitmiss[k][1])
+		hm.write(str(k) + " "  + str(mem_hitmiss[k][0]) + " "  + str(mem_hitmiss[k][1]))

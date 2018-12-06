@@ -12,18 +12,19 @@ void storeprint(int idx, int* addr)
 
 int main()
 {
-	const unsigned int size1 = 100;
-	int arr1[size1];
+	const unsigned int size1 = 1e3;
+	unsigned int arr1[size1];
 
-	const unsigned int size2 = 3000;
-	int arr2[size2];
+	const unsigned int size2 = 3e4;
+	unsigned int arr2[size2];
 
-	for (unsigned int i = 0; i < 60000; ++i)
+	for (unsigned int i = 0; i < 6e6; ++i)
 	{
-		unsigned int j = i % size1;
+		unsigned int idx = i * (i+1);
+		unsigned int j = idx % size1;
 		arr1[j] += i;
 
-		unsigned int k = i % size2;
+		unsigned int k = idx % size2;
 		arr2[k] += i;
 	}
 
