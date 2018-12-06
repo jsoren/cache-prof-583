@@ -19,10 +19,11 @@ Make sure to change sim_location in profile.py in order to match the location of
 Then you can run:
 
 ./compile.sh
+./unroll.sh
 ./gen.sh
 python profile.py > hitmiss.txt
 
-This will compile main.c, will process it, and will generate profile data.
+This will compile main.c, will unroll it, process it, and will generate profile data.
 This profile data will be used with the cache simulator to determine the hits and misses for each memory access,
 and store them in hitmiss.txt
 

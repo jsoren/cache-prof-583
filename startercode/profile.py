@@ -5,8 +5,9 @@ import math
 # the filepath to the cache simulator. Change as needed
 sim_location = '~/proj583/cpu-cache-simulator/cpu-cache-simulator/simulator.py'
 
-# the arguments to the cache simulator. Change as needed. Currently using cache size 2^4, block size 2^0, LRU replacement, and write-back
-sim_args = '4 0 0 LRU WB'
+# the arguments to the cache simulator. Change as needed. Currently using cache size 2^13 = 8192, block size 2^6 = 64, LRU replacement, and write-back.
+# These arguments are based on size of these values in eecs583 machines
+sim_args = '13 6 0 LRU WB'
 
 # The commands that will be fed to the cache simulator
 command = ''
@@ -14,10 +15,32 @@ command = ''
 # The list of all memory accesses
 memaccesses = []
 
-# each memory address is reassigned to a simpler address for simulation purposes
-# This dictionary maps true addresses to simulated ones
-addresses = {}
-addrIdx = 0
+# We need to use simulated memory addresses, but they need to be the same distance from each other
+# This is the minimal and maximal address of any memory operation
+# we'll shift all memory accesses to start at 0
+minAddr = -1
+maxAddr = -1
+
+# This loop checks for the lowest address
+with open('prof.txt', 'r') as f:	
+	for line in f.readlines():
+		# we only care about lines that look like:
+		#  store # to #
+		# or:
+		#  load # from #
+		words = line.split()
+		if (len(words) == 4):
+			if words[0] == 'store' or words[0] == 'load':
+				addr = int(words[3], 0)
+				if minAddr == -1 or addr < minAddr:
+					minAddr = addr
+				if addr > maxAddr:
+					maxAddr = addr
+
+# the block size is 64, so reduce to a multiple of 64
+minAddr -= minAddr % 64
+
+print("Address range:", minAddr, maxAddr)
 
 with open('prof.txt', 'r') as f:	
 	for line in f.readlines():
@@ -30,13 +53,7 @@ with open('prof.txt', 'r') as f:
 			if words[0] == 'store':
 				memaccesses.append(words[1])
 
-				idx = 0
-				if (words[3] in addresses.keys()):
-					idx = addresses[words[3]]
-				else:
-					idx = addrIdx
-					addresses[words[3]] = idx
-					addrIdx += 1
+				idx = int(words[3], 0) - minAddr
 
 				# we just write 0 to the memory address. We don't care about writing new data.
 				command += 'write ' + str(idx) + ' 0\nstats\n'
@@ -44,13 +61,7 @@ with open('prof.txt', 'r') as f:
 			if words[0] == 'load':
 				memaccesses.append(words[1])
 
-				idx = 0
-				if (words[3] in addresses.keys()):
-					idx = addresses[words[3]]
-				else:
-					idx = addrIdx
-					addresses[words[3]] = idx
-					addrIdx += 1
+				idx = int(words[3], 0) - minAddr
 
 				command += 'read ' + str(idx) + '\nstats\n'
 
@@ -58,10 +69,14 @@ with open('prof.txt', 'r') as f:
 command += 'quit'
 
 # We want to start the simulator with just enough memory for all of our accesses
-mem = int(math.ceil(math.log(addrIdx, 2)))
+mem = int(math.ceil(math.log(maxAddr - minAddr, 2)))
 
+with open('command.txt', 'w') as c:
+	c.write(command)
+
+exit
 # Feed all commands into the simulator
-result = sp.check_output('echo -e "' + command + '" | python3 ' + sim_location + ' ' + str(mem) + ' ' + sim_args, shell=True)
+result = sp.check_output('cat command.txt | python3 ' + sim_location + ' ' + str(mem) + ' ' + sim_args, shell=True)
 result = result.decode('utf-8')
 
 # Extract all stat output from the result
