@@ -25,8 +25,10 @@
 
 #include "llvm/Analysis/BranchProbabilityInfo.h"
 #include "llvm/Analysis/BlockFrequencyInfo.h"
+#include "llvm/Analysis/LoopInfo.h"
 
 #include <map>
+#include <fstream>
 
 using namespace llvm;
 
@@ -38,11 +40,26 @@ namespace {
         static char ID; // Pass identification, replacement for typeid
         HW1() : ModulePass(ID) {}
 
+        // Get unique indexes for every load and store. These should match the indexes from the profiler
+        std::map<Instruction*, int> memoryIndexes;
+        int memIdx = 0;
+
+        // Get hit ratio for each mem access id
+        std::map<int, double> hitratio;
+
         bool runOnModule(Module &M) override
         {
-            // Get uniwue indexes for every load and store. These should match the indexes from the profiler
-            std::map<Instruction*, int> memoryIndexes;
-            int memIdx = 0;
+            // Read data from hitmiss file
+            std::ifstream reader("hitmiss.txt");
+            std::string tmp;
+            int id, hits, misses;
+            // Get rid of header
+            reader >> tmp >> tmp >> tmp;
+            while (reader >> id >> hits >> misses)
+            {
+                hitratio[id] = (double) hits / (double) (hits + misses);
+            }
+            reader.close();
 
             for (Module::iterator f = M.begin(); f != M.end(); ++f)
             {
@@ -73,24 +90,44 @@ namespace {
                 Function* F = &(*f);
                 if (F->getName() == "loadprint" || F->getName() == "storeprint" || F->getName() == "printf") continue;
 
-                for (Function::iterator b = F->begin(); b != F->end(); b++) {
-                    BasicBlock *bb = &(*b);
-                    for(BasicBlock::iterator i_iter = bb->begin(); i_iter != bb->end(); ++i_iter) {
-                        Instruction *I = &(*i_iter);
+                LoopInfo& LI = getAnalysis<LoopInfoWrapperPass>(*f).getLoopInfo();
 
-                        // Hoist? do stuff?
+                for (Loop* L : LI)
+                {
+                    for (BasicBlock* bb : L->getBlocks())
+                    {
+                        for(BasicBlock::iterator i_iter = bb->begin(); i_iter != bb->end(); ++i_iter) {
+                            Instruction *I = &(*i_iter);
 
-                    }
+                            if (I->getOpcode() == Instruction::Load)
+                            {
+                                errs() << "Found Load\n";
+                                int memID = memoryIndexes.at(I);
+                                double ratio = hitratio.at(memID);
+                                errs() << memID << " " << ratio << "\n";
+                            }
 
+                            if (I->getOpcode() == Instruction::Store)
+                            {
+                                errs() << "Found Store\n";
+                                int memID = memoryIndexes.at(I);
+                                double ratio = hitratio.at(memID);
+                                errs() << memID << " " << ratio << "\n";
+                            }
+                        }
+                    } 
                 }
 
-                return false;
+                
             }
+
+            return false;
         }
 
         void getAnalysisUsage(AnalysisUsage &AU) const {
             AU.addRequired<BranchProbabilityInfoWrapperPass>();
             AU.addRequired<BlockFrequencyInfoWrapperPass>();
+            AU.addRequired<LoopInfoWrapperPass>();
         }
     };
 

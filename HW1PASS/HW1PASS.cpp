@@ -38,6 +38,11 @@ namespace {
         static char ID; // Pass identification, replacement for typeid
         HW1() : ModulePass(ID) {}
 
+        // Every store and load instruction will be represented as a unique index.
+        // The first will be instruction 0, the second will be instruction 1, and so on.
+        std::map<Instruction*, int> memoryIndexes;
+        int memIdx = 0;
+
         bool runOnModule(Module &M) override
         {
             // Get the functions that print out for every load and store
@@ -50,11 +55,6 @@ namespace {
                 errs() << "Function not found\n";
                 return false;
             }
-
-            // Every store and load instruction will be represented as a unique index.
-            // The first will be instruction 0, the second will be instruction 1, and so on.
-            std::map<Instruction*, int> memoryIndexes;
-            int memIdx = 0;
 
             // Fill out the map of memoryindexes
             for (Module::iterator f = M.begin(); f != M.end(); ++f)
