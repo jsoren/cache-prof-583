@@ -12,16 +12,11 @@ void storeprint(int idx, int* addr)
 
 int main()
 {
-	int x = 0;
-	int y = x;
-	
-	int arr[4];
-	for (int i = 0; i < 2; ++i)
+	const unsigned int size = 60;
+	int arr[size];
+	for (unsigned int i = 0; i < 60; ++i)
 	{
-		for (int j = 0; j < 2; ++j)
-		{
-			arr[i+2*j] = i+j;
-		}
+		arr[i] = i;
 	}
 
 	printf("done\n");
