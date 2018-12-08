@@ -120,7 +120,7 @@ for i, match in enumerate(matches):
 # for all memory acceses
 with open('hitmiss.txt','w') as hm:
 	print("Memory_access_ID Hits Misses")
-	hm.write("Memory_access_ID Hits Misses")
+	hm.write("Memory_access_ID Hits Misses\n")
 	for k in mem_hitmiss.keys():
 		print(k, mem_hitmiss[k][0], mem_hitmiss[k][1])
-		hm.write(str(k) + " "  + str(mem_hitmiss[k][0]) + " "  + str(mem_hitmiss[k][1]))
+		hm.write(str(k) + " "  + str(mem_hitmiss[k][0]) + " "  + str(mem_hitmiss[k][1]) + "\n")
