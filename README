@@ -5,7 +5,7 @@ Usage:
 
 After cloning and entering the repo, do:
 
-mdkir build
+mkdir build
 cd build
 cmake ..
 make
@@ -28,5 +28,21 @@ This profile data will be used with the cache simulator to determine the hits an
 and store them in a file called hitmiss.txt
 
 There is also a hoist/ directory, which holds the pass that will be used to process and hoist the code. This pass is unfinished.
+To run the hoist code, enter the hoist/ directory.
+run:
 
-NOTE: The current main.c takes about 7.5 minutes for the profiling stage.
+mkdir build
+cd build 
+cmake ..
+make
+
+This will build the hoist pass inside the hoist/build directory.
+
+Then, copy unroll.bc and hitmiss.txt from build/ to hoist/build.
+Finally, run the pass with:
+
+opt -load HW1PASS/LLVMHW1PASS.so -hw1 unroll.bc > final.bc
+
+NOTE:
+The current main.c is built to have two hoistable instructions per loop iteration. The current hoist pass is designed
+to skip every instruction in the subloops.

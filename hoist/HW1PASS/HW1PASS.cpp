@@ -96,37 +96,42 @@ namespace {
                 {
                     // BasicBlock* prehead = L->getLoopPreheader();
                     // errs() << "Term: " << prehead->getTerminator() << "\n";
-                    Instruction* slowfunc = nullptr;
+                    //Instruction* slowfunc = nullptr;
 
-                    
+                    // Skip subloops
+                    if (L->getSubLoops().size() == 0) continue;
+
                     for (BasicBlock* bb : L->getBlocks())
                     {
+                        // Skip blocks in subloops
+                        if (LI.getLoopFor(bb) != L) continue;
+
                         for(BasicBlock::iterator i_iter = bb->begin(); i_iter != bb->end(); ++i_iter) {
                             Instruction *I = &(*i_iter);
 
-                            if (I->getOpcode() == Instruction::Call)
-                            {
-                                CallInst* CI = dyn_cast<CallInst>(I);
-                                Function* CF = CI->getCalledFunction();
-                                if (CF && CF->getName() == "slowfunc")
-                                {
-                                    slowfunc = I;
-                                    errs() << "set slowfunc\n";
-                                }
-                            }
+                            // if (I->getOpcode() == Instruction::Call)
+                            // {
+                            //     CallInst* CI = dyn_cast<CallInst>(I);
+                            //     Function* CF = CI->getCalledFunction();
+                            //     if (CF && CF->getName() == "slowfunc")
+                            //     {
+                            //         slowfunc = I;
+                            //         errs() << "set slowfunc\n";
+                            //     }
+                            // }
 
                             if (I->getOpcode() == Instruction::Load)
                             {
                                 errs() << "Found Load\n";
                                 int memID = memoryIndexes.at(I);
-                                double ratio = hitratio.at(memID);
+                                double ratio = hitratio[memID];
                                 errs() << memID << " " << ratio << "\n";
+
+                                // Hoist things with a high hit ratio
                                 if (ratio > 0.5)
                                 {
-                                    if (slowfunc) {
-                                        errs() << "Moving before slowfunc\n";
-                                        I->moveBefore(slowfunc);
-                                    }
+                                    errs() << "hoistable\n";
+                                    I->moveBefore(L->getHeader()->getTerminator());
                                 }
                             }
 
@@ -134,7 +139,7 @@ namespace {
                             {
                                 errs() << "Found Store\n";
                                 int memID = memoryIndexes.at(I);
-                                double ratio = hitratio.at(memID);
+                                double ratio = hitratio[memID];
                                 errs() << memID << " " << ratio << "\n";
                             }
                         }
