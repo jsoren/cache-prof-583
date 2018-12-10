@@ -10,6 +10,8 @@ void storeprint(int idx, int* addr)
 	printf("store %d to %p\n", idx, (void*) addr);
 }
 
+void slowfunc(void);
+
 int main()
 {
 	const unsigned int size1 = 1e3;
@@ -22,11 +24,18 @@ int main()
 	{
 		unsigned int idx = i * (i+1);
 		unsigned int j = idx % size1;
-		arr1[j] += i;
-
 		unsigned int k = idx % size2;
+
+		slowfunc();
+
+		arr1[j] += i;
 		arr2[k] += i;
 	}
 
 	printf("done\n");
+}
+
+void slowfunc(void)
+{
+	int x = 0;
 }

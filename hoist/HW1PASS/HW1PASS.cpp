@@ -94,10 +94,26 @@ namespace {
 
                 for (Loop* L : LI)
                 {
+                    // BasicBlock* prehead = L->getLoopPreheader();
+                    // errs() << "Term: " << prehead->getTerminator() << "\n";
+                    Instruction* slowfunc = nullptr;
+
+                    
                     for (BasicBlock* bb : L->getBlocks())
                     {
                         for(BasicBlock::iterator i_iter = bb->begin(); i_iter != bb->end(); ++i_iter) {
                             Instruction *I = &(*i_iter);
+
+                            if (I->getOpcode() == Instruction::Call)
+                            {
+                                CallInst* CI = dyn_cast<CallInst>(I);
+                                Function* CF = CI->getCalledFunction();
+                                if (CF && CF->getName() == "slowfunc")
+                                {
+                                    slowfunc = I;
+                                    errs() << "set slowfunc\n";
+                                }
+                            }
 
                             if (I->getOpcode() == Instruction::Load)
                             {
@@ -105,6 +121,13 @@ namespace {
                                 int memID = memoryIndexes.at(I);
                                 double ratio = hitratio.at(memID);
                                 errs() << memID << " " << ratio << "\n";
+                                if (ratio > 0.5)
+                                {
+                                    if (slowfunc) {
+                                        errs() << "Moving before slowfunc\n";
+                                        I->moveBefore(slowfunc);
+                                    }
+                                }
                             }
 
                             if (I->getOpcode() == Instruction::Store)
