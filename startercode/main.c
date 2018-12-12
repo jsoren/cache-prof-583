@@ -2,12 +2,12 @@
 
 void loadprint(int idx, int* addr)
 {
-	printf("load %d from %p\n", idx, (void*) addr);
+	printf("load\t%d\tat\t%p\n", idx, (void*) addr);
 }
 
 void storeprint(int idx, int* addr)
 {
-	printf("store %d to %p\n", idx, (void*) addr);
+	printf("store\t%d\tat\t%p\n", idx, (void*) addr);
 }
 
 // void slowfunc(unsigned int* arr1, unsigned int* arr2, unsigned int size1, unsigned int size2);

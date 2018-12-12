@@ -14,6 +14,9 @@ command = ''
 
 # The list of all memory accesses
 memaccesses = []
+# The corresponding list of types of access.
+# 'l' for load and 's' for store
+memtypes = []
 
 # We need to use simulated memory addresses, but they need to be the same distance from each other
 # This is the minimal and maximal address of any memory operation
@@ -21,7 +24,7 @@ memaccesses = []
 minAddr = -1
 maxAddr = -1
 
-# This loop checks for the lowest address
+# This loop checks for the lowest and highest memory addresses
 with open('prof.txt', 'r') as f:	
 	for line in f.readlines():
 		# we only care about lines that look like:
@@ -40,8 +43,10 @@ with open('prof.txt', 'r') as f:
 # the block size is 64, so reduce to a multiple of 64
 minAddr -= minAddr % 64
 
-print("Address range:", minAddr, maxAddr)
+print("Address range:", hex(minAddr), hex(maxAddr))
 
+# Rescale each memory address to fit in a range
+# where 0 is the minimum address
 with open('prof.txt', 'r') as f:	
 	for line in f.readlines():
 		# we only care about lines that look like:
@@ -52,14 +57,17 @@ with open('prof.txt', 'r') as f:
 		if (len(words) == 4):
 			if words[0] == 'store':
 				memaccesses.append(words[1])
+				memtypes.append('s')
 
 				idx = int(words[3], 0) - minAddr
 
-				# we just write 0 to the memory address. We don't care about writing new data.
+				# For simulation purposes, we don't care about the actual memory contents,
+				# so we just write 0 each time
 				command += 'write ' + str(idx) + ' 0\nstats\n'
 
 			if words[0] == 'load':
 				memaccesses.append(words[1])
+				memtypes.append('l')
 
 				idx = int(words[3], 0) - minAddr
 
@@ -97,6 +105,11 @@ mem_hitmiss = {}
 for acc in memaccesses:
 	mem_hitmiss[acc] = [0, 0]
 
+# Keep track of the number of hits and misses for loads and stores separately
+type_hitmiss = {}
+type_hitmiss['l'] = [0, 0]
+type_hitmiss['s'] = [0, 0]
+
 for i, match in enumerate(matches):
 
 	# each match looks like:
@@ -106,21 +119,38 @@ for i, match in enumerate(matches):
 	miss = int(filtered[4])
 	
 	memaccess = memaccesses[i]
+	memtype = memtypes[i]
 
 	if hit > hitmiss[0]:
 		hitmiss[0] = hit
 		mem_hitmiss[memaccess][0] += 1
+		type_hitmiss[memtype][0] += 1
 
 	if miss > hitmiss[1]:
 		hitmiss[1] = miss
 		mem_hitmiss[memaccess][1] += 1
+		type_hitmiss[memtype][1] += 1
+
+# Print total hits and misses
+# Also print hits and misses for loads and stores
+print("Total hits:", hitmiss[0])
+print("Total misses:", hitmiss[1])
+print("Hit ratio:", hitmiss[0] / (hitmiss[0] + hitmiss[1]), "\n")
+
+print("Load hits:", type_hitmiss['l'][0])
+print("Load misses:", type_hitmiss['l'][1])
+print("Hit ratio:", type_hitmiss['l'][0] / (type_hitmiss['l'][0] + type_hitmiss['l'][1]), "\n")
+
+print("Store hits:", type_hitmiss['s'][0])
+print("Store misses:", type_hitmiss['s'][1])
+print("Hit ratio:", type_hitmiss['s'][0] / (type_hitmiss['s'][0] + type_hitmiss['s'][1]), "\n")
 
 # print profile as:
 #  memory_access hits misses
 # for all memory acceses
 with open('hitmiss.txt','w') as hm:
-	print("Memory_access_ID Hits Misses")
+	#print("Memory_access_ID Hits Misses")
 	hm.write("Memory_access_ID Hits Misses\n")
 	for k in mem_hitmiss.keys():
-		print(k, mem_hitmiss[k][0], mem_hitmiss[k][1])
+		#print(k, mem_hitmiss[k][0], mem_hitmiss[k][1])
 		hm.write(str(k) + " "  + str(mem_hitmiss[k][0]) + " "  + str(mem_hitmiss[k][1]) + "\n")
