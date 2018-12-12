@@ -1,6 +1,12 @@
 import subprocess as sp
 import re
 import math
+import sys
+
+if (len(sys.argv) != 3):
+	print("Error: incorrect command line arguments")
+	print("Usage: python " + sys.argv[0] + " input_file output_file")
+	sys.exit()
 
 # the filepath to the cache simulator. Change as needed
 sim_location = '~/proj583/cpu-cache-simulator/cpu-cache-simulator/simulator.py'
@@ -24,8 +30,12 @@ memtypes = []
 minAddr = -1
 maxAddr = -1
 
+# Get file to read from and file to write from
+infile = sys.argv[1]
+outfile = sys.argv[2]
+
 # This loop checks for the lowest and highest memory addresses
-with open('prof.txt', 'r') as f:	
+with open(infile, 'r') as f:	
 	for line in f.readlines():
 		# we only care about lines that look like:
 		#  store # to #
@@ -148,7 +158,7 @@ print("Hit ratio:", type_hitmiss['s'][0] / (type_hitmiss['s'][0] + type_hitmiss[
 # print profile as:
 #  memory_access hits misses
 # for all memory acceses
-with open('hitmiss.txt','w') as hm:
+with open(outfile,'w') as hm:
 	#print("Memory_access_ID Hits Misses")
 	hm.write("Memory_access_ID Hits Misses\n")
 	for k in mem_hitmiss.keys():
