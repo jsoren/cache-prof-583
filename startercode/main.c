@@ -10,44 +10,31 @@ void storeprint(int idx, int* addr)
 	printf("store\t%d\tat\t%p\n", idx, (void*) addr);
 }
 
-// void slowfunc(unsigned int* arr1, unsigned int* arr2, unsigned int size1, unsigned int size2);
-
 int main()
 {
 	const unsigned int size1 = 1e3;
 	unsigned int arr1[size1];
 
-	const unsigned int size2 = 3e4;
+	const unsigned int size2 = 3e5;
 	unsigned int arr2[size2];
 
-	for (unsigned int ii = 0; ii < 10; ++ii)
+
+	for (unsigned int i = 0; i < 6e5; ++i)
 	{
-		for (unsigned int i = 0; i < 6e4; ++i)
+		unsigned int idx = i * (i+1);
+		unsigned int j = idx % (size1-1);
+		unsigned int k = idx % (size2-1);
+
+		unsigned int tmp = arr1[j] + arr2[k] + i;
+		
+		arr1[j+1] = tmp;
+
+		if (j > size1 / 2)
 		{
-			unsigned int idx = i * (i+1);
-			unsigned int j = (idx % (size1-1)) + 1;
-			unsigned int k = (idx % (size2-1)) + 1;
-
-			arr1[j]++;
-			arr2[k]++;
+			arr2[k+1] = tmp * tmp;
 		}
-
-		arr1[0]++;
-		arr2[0]++;
 	}
 
 	printf("done\n");
 }
 
-// void slowfunc(unsigned int* arr1, unsigned int* arr2, unsigned int size1, unsigned int size2)
-// {
-// 	for (unsigned int i = 0; i < 6e4; ++i)
-// 	{
-// 		unsigned int idx = i * (i+1);
-// 		unsigned int j = idx % size1;
-// 		unsigned int k = idx % size2;
-
-// 		arr1[j]++;
-// 		arr2[k]++;
-// 	}
-// }

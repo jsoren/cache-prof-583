@@ -3,6 +3,8 @@ You'll also need the cache simulator at: https://github.com/jaminthorns/cpu-cach
 
 Usage:
 
+PROFILING:
+
 After cloning and entering the repo, do:
 
 mkdir build
@@ -25,9 +27,26 @@ python profile.py prof.txt hitmiss.txt
 
 This will compile main.c, will unroll it, process it, and will generate profile data.
 This profile data will be used with the cache simulator to determine the hits and misses for each memory access,
-and store them in a file called hitmiss.txt
+and store them in a file called hitmiss.txt. This will also determine the overall hit ratio, as well as the hit ratio for
+loads and stores.
 
-There is also a hoist/ directory, which holds the pass that will be used to process and hoist the code. This pass is unfinished.
+
+REARRANGING:
+
+We're working on rearranging the profile data and resimulating it to see how this affects cache usage.
+To rearrange the profile data, run:
+
+python rearrange.py prof.txt newprof.txt
+
+To profile the rearranged data, run:
+
+python profile.py newprof.txt hitmiss.txt
+
+
+HOISTING:
+
+NOTE: Hoisting currently does not actually work.
+There is also a hoist/ directory, which holds the pass that will be used to process and hoist the code.
 To run the hoist code, enter the hoist/ directory.
 run:
 
@@ -42,7 +61,3 @@ Then, copy unroll.bc and hitmiss.txt from build/ to hoist/build.
 Finally, run the pass with:
 
 opt -load HW1PASS/LLVMHW1PASS.so -hw1 unroll.bc > final.bc
-
-NOTE:
-The current main.c is built to have two hoistable instructions per loop iteration. The current hoist pass is designed
-to skip every instruction in the subloops.

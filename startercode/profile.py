@@ -13,7 +13,9 @@ sim_location = '~/proj583/cpu-cache-simulator/cpu-cache-simulator/simulator.py'
 
 # the arguments to the cache simulator. Change as needed. Currently using cache size 2^13 = 8192, block size 2^6 = 64, LRU replacement, and write-back.
 # These arguments are based on size of these values in eecs583 machines
-sim_args = '13 6 0 LRU WB'
+cache_size = 13 # 2^13
+block_size = 6 # 2^6
+sim_args = str(cache_size) + ' ' + str(block_size) + ' 0 LRU WB'
 
 # The commands that will be fed to the cache simulator
 command = ''
@@ -53,11 +55,11 @@ with open(infile, 'r') as f:
 # the block size is 64, so reduce to a multiple of 64
 minAddr -= minAddr % 64
 
-print("Address range:", hex(minAddr), hex(maxAddr))
+print("Address range:", maxAddr - minAddr)
 
 # Rescale each memory address to fit in a range
 # where 0 is the minimum address
-with open('prof.txt', 'r') as f:	
+with open(infile, 'r') as f:	
 	for line in f.readlines():
 		# we only care about lines that look like:
 		#  store # to #
@@ -104,6 +106,7 @@ matches = re.findall(pattern, result)
 # Stats should have been printed exactly once for each memory access
 if len(matches) != len(memaccesses):
 	print("Error parsing results")
+	sys.exit()
 
 # Keep track of the total number of hits and misses so far to determine if each new access was a hit or a miss
 # stored as [hits, misses]
