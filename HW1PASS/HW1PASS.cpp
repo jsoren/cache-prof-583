@@ -129,6 +129,14 @@ namespace {
 
                 }
 
+                // Insert loop print statements
+                // LoopInfo& LI = getAnalysis<LoopInfoWrapperPass>(*f).getLoopInfo();
+
+                // for (Loop* L : LI)
+                // {
+
+                // }
+
                 return false;
             }
         }

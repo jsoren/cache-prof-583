@@ -31,7 +31,7 @@ int main()
 
 		if (j > size1 / 2)
 		{
-			arr2[k+1] = tmp * tmp;
+			arr2[k] = tmp * tmp;
 		}
 	}
 

@@ -1,3 +1,6 @@
+# Extremely simple rearrange script.
+# Execute all loads first, then all stores.
+
 import sys
 
 if (len(sys.argv) != 3):
