@@ -1,6 +1,8 @@
 This profiler is built starting from the HW1 code, which is why there's a HW1 directory containing the actual pass.
 You'll also need the cache simulator at: https://github.com/jaminthorns/cpu-cache-simulator
 
+NOTE: By default, these python scripts are designed to run with Python 3.
+
 Usage:
 
 PROFILING:
@@ -34,9 +36,9 @@ loads and stores.
 REARRANGING:
 
 We're working on rearranging the profile data and resimulating it to see how this affects cache usage.
-To rearrange the profile data, run:
+To rearrange the profile data, pick a rearranging script (we use cluster.py as an example), and run:
 
-python rearrange.py prof.txt newprof.txt
+python cluster.py prof.txt newprof.txt
 
 To profile the rearranged data, run:
 
