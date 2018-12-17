@@ -19,7 +19,7 @@ int main()
 	unsigned int arr2[size2];
 
 
-	for (unsigned int i = 0; i < 6e5; ++i)
+	for (unsigned int i = 0; i < 6e6; ++i)
 	{
 		unsigned int idx = i * (i+1);
 		unsigned int j = idx % (size1-1);

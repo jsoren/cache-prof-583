@@ -28,7 +28,7 @@ int main()
 		unsigned int tmp1 = arr1[j];
 		unsigned int tmp2 = arr2[k];
 
-		for (unsigned int l = 0; l < 3e3; ++l)
+		for (unsigned int l = 0; l < 1e3; ++l)
 		{
 			unsigned int m = (tmp1 + l) % size1;
 			unsigned int n = (tmp2 + l) % size2;
