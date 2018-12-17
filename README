@@ -18,10 +18,11 @@ This should build the pass inside a build directory. Then run:
 
 cp ../startercode/* .
 
-This will copy useful scripts and a test function (main.c) for profiling into the build directory.
+This will copy useful scripts and several test functions for profiling into the build directory.
 Make sure to change sim_location in profile.py in order to match the location of the cache simulator on your machine
 Then you can run:
 
+cp simpleloop.c main.c
 ./compile.sh
 ./unroll.sh
 ./gen.sh
