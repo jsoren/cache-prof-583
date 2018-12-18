@@ -5,6 +5,7 @@ NOTE: By default, these python scripts are designed to run with Python 3.
 
 Usage:
 
+
 PROFILING:
 
 After cloning and entering the repo, do:
@@ -19,7 +20,7 @@ This should build the pass inside a build directory. Then run:
 cp ../startercode/* .
 
 This will copy useful scripts and several test functions for profiling into the build directory.
-Make sure to change sim_location in profile.py in order to match the location of the cache simulator on your machine
+Make sure to change sim_location in profile.py in order to match the location of the cache simulator on your machine.
 Then you can run:
 
 cp simpleloop.c main.c
@@ -28,22 +29,50 @@ cp simpleloop.c main.c
 ./gen.sh
 python profile.py prof.txt hitmiss.txt
 
-This will compile main.c, will unroll it, process it, and will generate profile data.
+This will compile main.c, will unroll it, process it, and will generate profile data. Note that simpleloop.c can be switched with
+nestedloop.c, or branchloop.c
 This profile data will be used with the cache simulator to determine the hits and misses for each memory access,
 and store them in a file called hitmiss.txt. This will also determine the overall hit ratio, as well as the hit ratio for
 loads and stores.
 
 
+
 REARRANGING:
 
 We're working on rearranging the profile data and resimulating it to see how this affects cache usage.
-To rearrange the profile data, pick a rearranging script (we use cluster.py as an example), and run:
+To rearrange the profile data, pick a rearranging script (we use cluster.py as an example, but 
+naivemove.py is also an option), and run:
 
-python cluster.py prof.txt newprof.txt
+python clusterops.py prof.txt newprof.txt
 
 To profile the rearranged data, run:
 
 python profile.py newprof.txt hitmiss.txt
+
+The two scripts available for rearranging are:
+
+naivemove.py:
+Moves all loads to the beginning of the program, and all stores to the end.
+
+clusterops.py:
+Move loads up in the program to be closer to stores to the same address.
+
+
+
+
+SAMPLE PROGRAMS:
+
+The three sample programs are:
+
+simpleloop.c:
+Implements a single loop, with memory operations inside the loop.
+
+nestedloop.c:
+Implements a nested loop. Memory operations are on the inner and outer loops.
+
+branchloop.c:
+Implements a loop with banching. Memory operations are on all paths.
+
 
 
 HOISTING:

@@ -1,3 +1,7 @@
+/**
+ * A program that has a loop, and a conditionally executed branch.
+ * There are memory operations along the main path and the side path.
+ */
 #include <stdio.h>
 
 void loadprint(int idx, int* addr)

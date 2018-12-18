@@ -1,3 +1,7 @@
+/**
+ * A program that has a single loop, and memory operations
+ * in each iteration of the loop
+ */
 #include <stdio.h>
 
 void loadprint(int idx, int* addr)

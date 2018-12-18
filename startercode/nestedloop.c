@@ -1,3 +1,7 @@
+/**
+ * A program that has nested loops, and memory operations
+ * in both the inner and outer loops
+ */
 #include <stdio.h>
 
 void loadprint(int idx, int* addr)
